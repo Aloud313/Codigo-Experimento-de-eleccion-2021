@@ -1,0 +1,34 @@
+#Choise experiment binario 
+
+library(support.CEs)
+library(DataEditR)
+library(ggplot2)
+library(survival)
+library(mded)
+
+#dataset combina las respuestas con la matriz de preguntas
+
+dataset_choice2 <- make.dataset(
+  respondent.dataset = respondent2binario,
+  choice.indicators = 
+    c("q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8", "q9", "q10", "q11", "q12", "q13", "q14", "q15", "q16"),
+  design.matrix = matriz_binaria_preguntas)
+
+data_edit(dataset_choice2)
+
+#Creacion de modelo
+
+blout <- glm(RES ~ Terreste + Todo_el_año + Tiempo + Costo,
+             family = binomial(link = logit), data = dataset_choice2)
+blout
+
+summary(blout)
+
+# calculo medidas de bondad de ajuste de modelo
+gofm(blout)
+
+#Calculo disposición marginal a pagar por los atributos y / o niveles del modelo estimado.
+mwtp(output = blout,
+     monetary.variables = c("Costo"),
+     nonmonetary.variables = c("Terreste", "Tiempo", "Todo_el_año"),
+     seed = NULL)
