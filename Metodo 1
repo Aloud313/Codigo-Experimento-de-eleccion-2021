@@ -1,0 +1,32 @@
+library(support.CEs)
+library(DataEditR)
+library(ggplot2)
+library(survival)
+
+# Creación de dataset de información a partir de las matrices de preguntas (cuestionario) y respuestas de los consuiltados
+
+dataset_choice1 <- make.dataset(
+  respondent.dataset = respondent1,
+  choice.indicators = 
+    c("q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8"),
+  design.matrix = matriz_preguntas_choice1)
+
+
+data_edit(dataset_choice1)
+
+# confeccion de modelo 
+clogout_choice1 <- clogit(RES ~ ASC1 + Todo_el_año1 + Tiempo1 + Costo1 + ASC2 +
+                            Todo_el_año2 + Tiempo2 + Costo2 +
+                     strata(STR), data = dataset_choice1)
+clogout_choice1
+
+# calculo medidas de bondad de ajuste de modelo
+gofm(clogout_choice1)
+
+#Calculo disposición marginal a pagar por los atributos y / o niveles del modelo estimado.
+
+mwtp(
+  output = clogout_choice1,
+  monetary.variables = c("Costo1", "Costo2"),
+  nonmonetary.variables = list(c("Todo_el_año1", "Tiempo1"), c("Todo_el_año2", "Tiempo2")),
+  seed = NULL)
